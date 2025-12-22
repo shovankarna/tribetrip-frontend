@@ -1,0 +1,103 @@
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.main-content {
+    flex: 1;
+    padding-top: 80px; /* Navbar height spacing */
+    display: flex;
+    justify-content: center;
+    padding-bottom: 4rem;
+}
+
+.profile-container {
+    width: 100%;
+    max-width: 600px;
+    padding: 2rem;
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.profile-header h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.email-badge {
+    background: rgba(255,255,255,0.1);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.7);
+}
+
+.profile-card {
+    background: #1e1e1e;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.info-row {
+    margin-bottom: 1.5rem;
+}
+
+.info-row label {
+    display: block;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.info-row p {
+    font-size: 1.2rem;
+    margin: 0;
+    font-weight: 500;
+}
+
+.placeholder {
+    color: rgba(255,255,255,0.3);
+    font-style: italic;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.8rem;
+    background: #2a2a2a;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    color: white;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.form-group input:focus {
+    border-color: #646cff;
+    outline: none;
+}
+
+.action-row {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
