@@ -10,6 +10,9 @@ interface UserProfile {
     email: string;
     firstName: string;
     lastName: string;
+    createdAt: string;
+    updatedAt: string;
+    active: boolean;
 }
 
 const ProfilePage = () => {
@@ -59,6 +62,15 @@ const ProfilePage = () => {
         }
     };
 
+    const formatDate = (dateString: string) => {
+        if (!dateString) return 'N/A';
+        return new Date(dateString).toLocaleDateString(undefined, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    };
+
     return (
         <div className="page-wrapper">
             <Navbar />
@@ -66,7 +78,10 @@ const ProfilePage = () => {
                 <div className="profile-container">
                     <div className="profile-header">
                         <h2>My Profile</h2>
-                        <span className="email-badge">{profile?.email}</span>
+                        <div className="header-meta">
+                             <span className="email-badge">{profile?.email}</span>
+                             {profile?.active && <span className="status-badge active">Active</span>}
+                        </div>
                     </div>
 
                     <div className="profile-card">
@@ -79,6 +94,10 @@ const ProfilePage = () => {
                                 <div className="info-row">
                                     <label>Last Name</label>
                                     <p>{profile?.lastName || <span className="placeholder">Not set</span>}</p>
+                                </div>
+                                <div className="info-row">
+                                    <label>Member Since</label>
+                                    <p>{profile?.createdAt ? formatDate(profile.createdAt) : <span className="placeholder">N/A</span>}</p>
                                 </div>
                                 <div className="action-row">
                                     <Button onClick={() => setIsEditing(true)}>Edit Profile</Button> 

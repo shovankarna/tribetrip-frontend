@@ -2,6 +2,8 @@ import { Routes, Route } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import ProfilePage from './pages/ProfilePage';
 import DashboardPage from './pages/DashboardPage';
+import TripsPage from './pages/TripsPage';
+import TripDetailPage from './pages/TripDetailPage';
 import keycloak from './auth';
 import { useState, useEffect, useRef } from 'react';
 
@@ -45,6 +47,22 @@ function App() {
             element={
                 <ProtectedRoute>
                     <DashboardPage />
+                </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/trips" 
+            element={
+                <ProtectedRoute>
+                    <TripsPage />
+                </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/trips/:tripId" 
+            element={
+                <ProtectedRoute>
+                    <TripDetailPage />
                 </ProtectedRoute>
             } 
           />

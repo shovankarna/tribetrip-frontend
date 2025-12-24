@@ -37,7 +37,7 @@ const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
                     {/* Different links based on context or Auth? */}
                     {keycloak.authenticated ? (
                         <>
-                             <a onClick={() => navigate('/dashboard')}>My Trips</a>
+                             <a onClick={() => navigate('/trips')}>My Trips</a>
                              {/* <a onClick={() => navigate('/explore')}>Explore</a> */}
                         </>
                     ) : (
