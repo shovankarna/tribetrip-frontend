@@ -1,6 +1,9 @@
 import keycloak from '../auth';
+import { handleApiResponse } from '../utils/api';
 
 const API_BASE_URL = '/api'; // Nginx proxy handles this
+
+export type TripRole = 'OWNER' | 'ADMIN' | 'MEMBER' | 'VIEWER';
 
 export interface Trip {
     id: string;
@@ -9,15 +12,15 @@ export interface Trip {
     destination?: string;
     startDate?: string;
     endDate?: string;
-    status: 'DRAFT' | 'PLANNED' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
-    myRole: 'OWNER' | 'MEMBER' | 'VIEWER';
+    status: 'DRAFT' | 'PLANNING' | 'CONFIRMED' | 'ONGOING' | 'COMPLETED' | 'CANCELLED';
+    myRole: TripRole;
 }
 
 export interface TripMember {
     id: string;
     tripId: string;
     userId: string;
-    role: 'OWNER' | 'MEMBER' | 'VIEWER';
+    role: TripRole;
     active: boolean;
     joinedAt: string;
 }
@@ -42,16 +45,14 @@ export const TripService = {
         const response = await fetch(`${API_BASE_URL}/trips`, {
             headers: getHeaders()
         });
-        if (!response.ok) throw new Error('Failed to fetch trips');
-        return response.json();
+        return handleApiResponse(response);
     },
 
     getTrip: async (tripId: string): Promise<Trip> => {
         const response = await fetch(`${API_BASE_URL}/trips/${tripId}`, {
             headers: getHeaders()
         });
-        if (!response.ok) throw new Error('Failed to fetch trip details');
-        return response.json();
+        return handleApiResponse(response);
     },
 
     createTrip: async (tripData: CreateTripRequest): Promise<Trip> => {
@@ -60,16 +61,14 @@ export const TripService = {
             headers: getHeaders(),
             body: JSON.stringify(tripData)
         });
-        if (!response.ok) throw new Error('Failed to create trip');
-        return response.json();
+        return handleApiResponse(response);
     },
 
     getTripMembers: async (tripId: string): Promise<TripMember[]> => {
         const response = await fetch(`${API_BASE_URL}/trips/${tripId}/members`, {
             headers: getHeaders()
         });
-        if (!response.ok) throw new Error('Failed to fetch trip members');
-        return response.json();
+        return handleApiResponse(response);
     },
 
     addMember: async (tripId: string, userId: string): Promise<TripMember> => {
@@ -78,11 +77,7 @@ export const TripService = {
             headers: getHeaders(),
             body: JSON.stringify({ userId, role: 'MEMBER' }) // Default to MEMBER
         });
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(errorText || 'Failed to add member');
-        }
-        return response.json();
+        return handleApiResponse(response);
     },
 
     removeMember: async (tripId: string, userId: string): Promise<void> => {
@@ -90,10 +85,7 @@ export const TripService = {
             method: 'DELETE',
             headers: getHeaders()
         });
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(errorText || 'Failed to remove member');
-        }
+        return handleApiResponse(response);
     },
 
     // Optional: Get members list if not included in Trip object
@@ -112,5 +104,42 @@ export const TripService = {
     // I will check TripResponse in backend to be sure. If missing, I will add it or add endpoint.
     // For now, I will implement `getTripMembers` assuming I might need to add it to backend.
 
-    // Actually, I'll stick to what we have. If `getTrip` response has it, good. 
+    leaveTrip: async (tripId: string, userId: string): Promise<void> => {
+        return TripService.removeMember(tripId, userId);
+    },
+
+    updateTrip: async (tripId: string, tripData: CreateTripRequest): Promise<Trip> => {
+        const response = await fetch(`${API_BASE_URL}/trips/${tripId}`, {
+            method: 'PUT',
+            headers: getHeaders(),
+            body: JSON.stringify(tripData)
+        });
+        return handleApiResponse(response);
+    },
+
+    deleteTrip: async (tripId: string): Promise<void> => {
+        const response = await fetch(`${API_BASE_URL}/trips/${tripId}`, {
+            method: 'DELETE',
+            headers: getHeaders()
+        });
+        return handleApiResponse(response);
+    },
+
+    updateMemberRole: async (tripId: string, userId: string, role: 'ADMIN' | 'MEMBER'): Promise<TripMember> => {
+        const response = await fetch(`${API_BASE_URL}/trips/${tripId}/members/${userId}/role`, {
+            method: 'PUT',
+            headers: getHeaders(),
+            body: JSON.stringify({ role })
+        });
+        return handleApiResponse(response);
+    },
+
+    updateTripStatus: async (tripId: string, status: Trip['status']): Promise<Trip> => {
+        const response = await fetch(`${API_BASE_URL}/trips/${tripId}/status`, {
+            method: 'PUT',
+            headers: getHeaders(),
+            body: JSON.stringify({ status })
+        });
+        return handleApiResponse(response);
+    }
 };

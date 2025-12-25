@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import keycloak from '../auth';
 
 export default function HomePage() {
@@ -13,7 +14,10 @@ export default function HomePage() {
         })
         .then(res => res.json())
         .then(data => setProfile(data))
-        .catch(err => console.error("Failed to fetch profile", err));
+        .catch(err => {
+            console.error(err);
+            toast.error("Failed to fetch profile");
+        });
     }
   }, []);
 

@@ -4,8 +4,18 @@ import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
 // import Button from '../components/common/Button'; // Unused
 import keycloak from '../auth';
+import toast from 'react-hot-toast';
+import ConfirmationModal from '../components/common/ConfirmationModal';
 import './TripDetailPage.css';
 import { TripService, type Trip, type TripMember } from '../services/TripService';
+import UpdateTripModal from '../components/trips/UpdateTripModal';
+import { 
+    canEditTripDetails, 
+    canAddMember, 
+    canRemoveMember, 
+    canChangeMemberRole, 
+    canChangeStatus 
+} from '../utils/tripPermissions';
 
 // Icons
 const CalendarIcon = () => (
@@ -32,6 +42,16 @@ const TripDetailPage = () => {
     const [addMemberId, setAddMemberId] = useState('');
     const [showAddMember, setShowAddMember] = useState(false);
 
+    // Modal State
+    const [confirmModal, setConfirmModal] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {},
+        isDestructive: false
+    });
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
     useEffect(() => {
         if (tripId) loadTripData(tripId);
     }, [tripId]);
@@ -47,6 +67,7 @@ const TripDetailPage = () => {
             setMembers(membersData);
         } catch (err: any) {
             setError(err.message || 'Failed to load trip details');
+            toast.error("Failed to load trip data");
         } finally {
             setLoading(false);
         }
@@ -60,36 +81,98 @@ const TripDetailPage = () => {
             setAddMemberId('');
             setShowAddMember(false);
             loadTripData(tripId);
+            toast.success("Member added successfully");
         } catch (err: any) {
-            alert(err.message);
+            toast.error(err.message || "Failed to add member");
         }
     };
 
-    const handleRemoveMember = async (userId: string) => {
-        if (!tripId || !window.confirm('Remove this member?')) return;
-        try {
-            await TripService.removeMember(tripId, userId);
-            loadTripData(tripId);
-        } catch (err: any) {
-            alert(err.message);
-        }
+    const handleRemoveMember = (userId: string) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Remove Member',
+            message: 'Are you sure you want to remove this member from the trip?',
+            isDestructive: true,
+            onConfirm: async () => {
+                if (!tripId) return;
+                try {
+                    await TripService.removeMember(tripId, userId);
+                    loadTripData(tripId);
+                    toast.success("Member removed successfully");
+                } catch (err: any) {
+                    toast.error(err.message || "Failed to remove member");
+                }
+            }
+        });
     };
 
-    const handleLeaveTrip = async () => {
-        if (!tripId || !keycloak.subject || !window.confirm('Leave this trip?')) return;
-        try {
-            await TripService.removeMember(tripId, keycloak.subject);
-            navigate('/trips');
-        } catch (err: any) {
-            alert(err.message);
-        }
+    const handleLeaveTrip = () => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Leave Trip',
+            message: 'Are you sure you want to leave this trip? You will lose access to the itinerary.',
+            isDestructive: true,
+            onConfirm: async () => {
+                if (!tripId || !keycloak.subject) return;
+                try {
+                    await TripService.removeMember(tripId, keycloak.subject);
+                    toast.success("You have left the trip");
+                    navigate('/trips');
+                } catch (err: any) {
+                    toast.error(err.message || "Failed to leave trip");
+                }
+            }
+        });
+    };
+
+    const handleDeleteTrip = () => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Delete Trip',
+            message: 'Are you sure you want to delete this trip? This action cannot be undone.',
+            isDestructive: true,
+            onConfirm: async () => {
+                if (!tripId) return;
+                try {
+                    await TripService.deleteTrip(tripId);
+                    toast.success("Trip deleted successfully");
+                    navigate('/trips');
+                } catch (err: any) {
+                    toast.error(err.message || "Failed to delete trip");
+                }
+            }
+        });
     };
 
     if (loading) return <div style={{padding: '2rem', color: 'white'}}>Loading trip details...</div>;
     if (error || !trip) return <div style={{padding: '2rem', color: '#ff4444'}}>{error || 'Trip not found'}</div>;
 
     const isOwner = trip.myRole === 'OWNER';
+    const isAdmin = trip.myRole === 'ADMIN';
+    const canManage = isOwner || isAdmin;
     const currentUserId = keycloak.subject;
+
+    const handleStatusChange = async (newStatus: Trip['status']) => {
+        if (!trip) return;
+        try {
+            await TripService.updateTripStatus(trip.id, newStatus);
+            loadTripData(trip.id);
+            toast.success(`Trip status updated to ${newStatus}`);
+        } catch (err: any) {
+            toast.error(err.message || "Failed to update status");
+        }
+    };
+
+    const handleRoleChange = async (userId: string, newRole: 'ADMIN' | 'MEMBER') => {
+        if (!trip) return;
+        try {
+            await TripService.updateMemberRole(trip.id, userId, newRole);
+            loadTripData(trip.id);
+            toast.success("Member role updated");
+        } catch (err: any) {
+             toast.error(err.message || "Failed to update role");
+        }
+    };
 
     return (
         <div className="trip-detail-page">
@@ -110,7 +193,26 @@ const TripDetailPage = () => {
                                     Leave Trip
                                 </button>
                             )}
-                            {/* Owner Actions (Edit) */}
+                            {isOwner && (
+                                <>
+                                    {canEditTripDetails(trip.status, trip.myRole) && (
+                                        <button 
+                                            className="cta-button-secondary" 
+                                            onClick={() => setIsEditModalOpen(true)}
+                                            style={{marginRight: '0.5rem', background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer'}}
+                                        >
+                                            Edit Trip
+                                        </button>
+                                    )}
+                                    <button 
+                                        className="cta-button-warning" 
+                                        onClick={handleDeleteTrip} 
+                                        style={{border: '1px solid #d32f2f', background: 'transparent', color: '#d32f2f', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer'}}
+                                    >
+                                        Delete Trip
+                                    </button>
+                                </>
+                            )}
                         </div>
                     </div>
 
@@ -128,9 +230,25 @@ const TripDetailPage = () => {
                             </div>
                         )}
                         <div className="td-meta-item" style={{marginLeft: 'auto'}}>
-                            <span className={`td-status-badge status-${trip.status}`}>
-                                {trip.status}
-                            </span>
+                            {canManage && canChangeStatus(trip.status, trip.myRole) ? (
+                                <select 
+                                    className={`td-status-badge status-${trip.status}`} 
+                                    value={trip.status} 
+                                    onChange={(e) => handleStatusChange(e.target.value as Trip['status'])}
+                                    style={{border: 'none', cursor: 'pointer', appearance: 'none', paddingRight: '1rem'}}
+                                >
+                                    <option value="DRAFT">DRAFT</option>
+                                    <option value="PLANNING">PLANNING</option>
+                                    <option value="CONFIRMED">CONFIRMED</option>
+                                    <option value="ONGOING">ONGOING</option>
+                                    <option value="COMPLETED">COMPLETED</option>
+                                    <option value="CANCELLED">CANCELLED</option>
+                                </select>
+                            ) : (
+                                <span className={`td-status-badge status-${trip.status}`}>
+                                    {trip.status}
+                                </span>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -159,7 +277,7 @@ const TripDetailPage = () => {
                         <div className="td-section">
                             <div className="td-section-header">
                                 <h2 className="td-section-title">Members ({members.length})</h2>
-                                {isOwner && (
+                                {canAddMember(trip.status, trip.myRole) && (
                                     <button 
                                         className="text-btn" 
                                         onClick={() => setShowAddMember(!showAddMember)}
@@ -194,9 +312,22 @@ const TripDetailPage = () => {
                                         </div>
                                         <div className="member-details">
                                             <div className="member-name">{member.userId}</div> {/* Replace with name if available */}
-                                            <div className="member-role">{member.role}</div>
+                                            <div className="member-actions-row" style={{display:'flex', alignItems:'center', gap: '0.5rem'}}>
+                                                <div className={`member-role role-${member.role}`}>{member.role}</div>
+                                                {canChangeMemberRole(trip.status, trip.myRole) && member.userId !== currentUserId && member.role !== 'OWNER' && (
+                                                    <select 
+                                                        className="role-select" 
+                                                        value={member.role} 
+                                                        onChange={(e) => handleRoleChange(member.userId, e.target.value as 'ADMIN' | 'MEMBER')}
+                                                        style={{fontSize: '0.7rem', background: '#333', color: '#fff', border: 'none', borderRadius: '4px', padding: '1px 4px'}}
+                                                    >
+                                                        <option value="MEMBER">Member</option>
+                                                        <option value="ADMIN">Admin</option>
+                                                    </select>
+                                                )}
+                                            </div>
                                         </div>
-                                        {isOwner && member.userId !== currentUserId && (
+                                        {canRemoveMember(trip.status, trip.myRole) && member.userId !== currentUserId && member.role !== 'OWNER' && (member.role !== 'ADMIN' || isOwner) && (
                                             <button className="remove-btn" onClick={() => handleRemoveMember(member.userId)}>
                                                 <TrashIcon />
                                             </button>
@@ -211,6 +342,24 @@ const TripDetailPage = () => {
 
             </div>
             <Footer />
+            
+            <ConfirmationModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={confirmModal.onConfirm}
+                title={confirmModal.title}
+                message={confirmModal.message}
+                isDestructive={confirmModal.isDestructive}
+            />
+            
+            {trip && (
+                <UpdateTripModal 
+                    isOpen={isEditModalOpen} 
+                    onClose={() => setIsEditModalOpen(false)} 
+                    onSuccess={() => loadTripData(trip.id)} 
+                    trip={trip} 
+                />
+            )}
         </div>
     );
 };

@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import LandingPage from './pages/LandingPage';
 import ProfilePage from './pages/ProfilePage';
 import DashboardPage from './pages/DashboardPage';
@@ -40,6 +41,29 @@ function App() {
   if (!init) return <div className="loading-screen">Starting TripTribe...</div>;
 
   return (
+    <>
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          style: {
+            background: '#333',
+            color: '#fff',
+            zIndex: 9999,
+          },
+          success: {
+            style: {
+              background: 'rgba(16, 185, 129, 0.9)',
+              border: '1px solid rgba(16, 185, 129, 0.2)',
+            },
+          },
+          error: {
+            style: {
+              background: 'rgba(239, 68, 68, 0.9)',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+            },
+          },
+        }}
+      />
       <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route 
@@ -75,6 +99,7 @@ function App() {
             } 
           />
       </Routes>
+    </>
   );
 }
 

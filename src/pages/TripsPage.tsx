@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
 import { TripService } from '../services/TripService';
@@ -21,7 +22,6 @@ const TripsPage = () => {
     const navigate = useNavigate();
     const [trips, setTrips] = useState<Trip[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<'all' | 'upcoming' | 'past'>('all');
     const [searchTerm, setSearchTerm] = useState('');
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -43,8 +43,9 @@ const TripsPage = () => {
             setLoading(true);
             const data = await TripService.getUserTrips();
             setTrips(data);
-        } catch (err: any) {
-            setError(err.message || 'Failed to load trips');
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to load trips");
         } finally {
             setLoading(false);
         }
@@ -55,9 +56,10 @@ const TripsPage = () => {
         try {
             const createdTrip = await TripService.createTrip(newTrip);
             setShowCreateModal(false);
+            toast.success("Trip created successfully!");
             navigate(`/trips/${createdTrip.id}`);
         } catch (err: any) {
-            setError(err.message || 'Failed to create trip');
+            toast.error(err.message || 'Failed to create trip');
         }
     };
 

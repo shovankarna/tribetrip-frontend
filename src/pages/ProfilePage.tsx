@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { handleApiResponse } from '../utils/api';
 import keycloak from '../auth';
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
@@ -26,12 +28,15 @@ const ProfilePage = () => {
             fetch('/api/user/me', {
                 headers: { 'Authorization': `Bearer ${keycloak.token}` }
             })
-            .then(res => res.json())
+            .then(res => handleApiResponse(res))
             .then(data => {
                 setProfile(data);
                 setFormData({ firstName: data.firstName || '', lastName: data.lastName || '' });
             })
-            .catch(err => console.error("Failed to fetch profile", err));
+            .catch(err => {
+                // If it's a handled error, err.message is already clean
+                toast.error(err.message || "Failed to fetch profile");
+            });
         }
     }, []);
 
@@ -48,15 +53,14 @@ const ProfilePage = () => {
                 body: JSON.stringify(formData)
             });
             
-            if (res.ok) {
-                const updated = await res.json();
-                setProfile(updated);
-                setIsEditing(false);
-            } else {
-                console.error("Update failed");
-            }
-        } catch (err) {
+            const updated = await handleApiResponse(res);
+            setProfile(updated);
+            setIsEditing(false);
+            toast.success("Profile updated successfully");
+
+        } catch (err: any) {
             console.error(err);
+            toast.error(err.message || "Update failed");
         } finally {
             setLoading(false);
         }
