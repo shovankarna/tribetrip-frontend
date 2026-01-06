@@ -35,7 +35,7 @@ const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
             {keycloak.authenticated ? (
                 <>
                      <a onClick={() => navigate('/trips')}>My Trips</a>
-                     {/* <a onClick={() => navigate('/explore')}>Explore</a> */}
+                     <a onClick={() => navigate('/itineraries')}>My Itineraries</a>
                 </>
             ) : (
                 isLanding && (

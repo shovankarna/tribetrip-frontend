@@ -264,10 +264,25 @@ const TripDetailPage = () => {
                                 <button style={{background: 'none', border: 'none', color: '#888', cursor: 'pointer'}}>+ Add Item</button>
                             </div>
                             
-                            <div className="itinerary-placeholder">
-                                <div className="placeholder-icon">🗺️</div>
-                                <p>No itinerary items yet.</p>
-                                <span style={{fontSize: '0.8rem', opacity: 0.6}}>Plan your daily activities here.</span>
+                            <div className="itinerary-preview" style={{background: '#252525', padding: '2rem', borderRadius: '8px', textAlign: 'center'}}>
+                                <div style={{fontSize: '2rem', marginBottom: '1rem'}}>🗺️</div>
+                                <h3 style={{margin: '0 0 0.5rem 0', color: 'white'}}>Trip Itinerary</h3>
+                                <p style={{color: '#aaa', margin: '0 0 1.5rem 0'}}>Plan and collaborate on daily activities.</p>
+                                <button 
+                                    style={{
+                                        backgroundColor: '#1E1E1E',
+                                        color: 'white',
+                                        border: '1px solid #555',
+                                        padding: '0.75rem 2rem',
+                                        fontSize: '1rem',
+                                        fontWeight: 600,
+                                        borderRadius: '8px',
+                                        cursor: 'pointer'
+                                    }}
+                                    onClick={() => navigate(`/trips/${trip.id}/itinerary`)}
+                                >
+                                    View Full Itinerary
+                                </button>
                             </div>
                         </div>
                     </div>

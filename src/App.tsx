@@ -5,6 +5,9 @@ import ProfilePage from './pages/ProfilePage';
 import DashboardPage from './pages/DashboardPage';
 import TripsPage from './pages/TripsPage';
 import TripDetailPage from './pages/TripDetailPage';
+import MyItinerariesPage from './pages/MyItinerariesPage';
+import ItineraryEditorPage from './pages/ItineraryEditorPage';
+import TripItineraryPage from './pages/TripItineraryPage';
 import keycloak from './auth';
 import { useState, useEffect, useRef } from 'react';
 
@@ -95,6 +98,30 @@ function App() {
             element={
                 <ProtectedRoute>
                     <ProfilePage />
+                </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/itineraries" 
+            element={
+                <ProtectedRoute>
+                    <MyItinerariesPage />
+                </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/itineraries/:templateId" 
+            element={
+                <ProtectedRoute>
+                    <ItineraryEditorPage />
+                </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/trips/:tripId/itinerary" 
+            element={
+                <ProtectedRoute>
+                    <TripItineraryPage />
                 </ProtectedRoute>
             } 
           />
