@@ -329,7 +329,10 @@ const TripDetailPage = () => {
                                             <div className="member-name">{member.userId}</div> {/* Replace with name if available */}
                                             <div className="member-actions-row" style={{display:'flex', alignItems:'center', gap: '0.5rem'}}>
                                                 <div className={`member-role role-${member.role}`}>{member.role}</div>
-                                                {canChangeMemberRole(trip.status, trip.myRole) && member.userId !== currentUserId && member.role !== 'OWNER' && (
+                                                {canChangeMemberRole(trip.status, trip.myRole) && 
+                                                 member.userId !== currentUserId && 
+                                                 member.role !== 'OWNER' && 
+                                                 (trip.myRole === 'OWNER' || member.role === 'MEMBER') && (
                                                     <select 
                                                         className="role-select" 
                                                         value={member.role} 

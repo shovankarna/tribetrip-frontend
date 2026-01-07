@@ -74,6 +74,7 @@ export interface TripItineraryItem {
     notes?: string;
     orderIndex?: number;
     unscheduled: boolean;
+    completed: boolean;
 }
 
 export interface TripItinerary {
@@ -91,6 +92,7 @@ export interface AddTripItineraryItemRequest {
     notes?: string;
     orderIndex?: number;
     unscheduled?: boolean;
+    completed?: boolean;
 }
 
 const getHeaders = () => {

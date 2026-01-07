@@ -16,8 +16,8 @@ export const canRemoveMember = (status: Trip['status'], role: TripRole): boolean
 };
 
 export const canChangeMemberRole = (status: Trip['status'], role: TripRole): boolean => {
-    if (role !== 'OWNER') return false;
-    return ['DRAFT', 'PLANNING'].includes(status);
+    if (role !== 'OWNER' && role !== 'ADMIN') return false;
+    return ['DRAFT', 'PLANNING', 'CONFIRMED', 'ONGOING'].includes(status);
 };
 
 export const canEditItinerary = (status: Trip['status'], _role: TripRole): boolean => {
@@ -45,6 +45,6 @@ export const canDeleteTrip = (_status: Trip['status'], role: TripRole): boolean 
 };
 
 export const canChangeStatus = (status: Trip['status'], role: TripRole): boolean => {
-    if (role !== 'OWNER') return false;
+    if (role !== 'OWNER' && role !== 'ADMIN') return false;
     return status !== 'COMPLETED' && status !== 'CANCELLED';
 };

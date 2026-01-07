@@ -5,6 +5,7 @@ import Navbar from '../components/common/Navbar';
 import { TripService, type Trip } from '../services/TripService';
 import { ItineraryService, type TripItinerary, type TripItineraryItem } from '../services/ItineraryService';
 import ItineraryItemModal from '../components/itinerary/ItineraryItemModal';
+import ConfirmationModal from '../components/common/ConfirmationModal';
 import './TripItineraryPage.css';
 
 const TripItineraryPage = () => {
@@ -18,6 +19,8 @@ const TripItineraryPage = () => {
     const [itemModalOpen, setItemModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<TripItineraryItem | undefined>(undefined);
     const [modalDefaultDate, setModalDefaultDate] = useState('');
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
     useEffect(() => {
         if (tripId) fetchData();
@@ -86,14 +89,45 @@ const TripItineraryPage = () => {
         }
     };
 
-    const handleDelete = async (itemId: string) => {
-        if (!tripId || !confirm("Delete item?")) return;
+    const handleDeleteClick = (itemId: string) => {
+        setItemToDelete(itemId);
+        setDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!tripId || !itemToDelete) return;
         try {
-            await ItineraryService.deleteTripItineraryItem(tripId, itemId);
+            await ItineraryService.deleteTripItineraryItem(tripId, itemToDelete);
             toast.success("Item deleted");
             fetchData();
         } catch (err) {
             toast.error("Failed to delete");
+        } finally {
+            setItemToDelete(null);
+        }
+    };
+
+    const handleToggleComplete = async (item: TripItineraryItem) => {
+        if (!tripId || !item || !itinerary) return;
+        
+        // Optimistic Update: Update UI immediately
+        const previousItinerary = itinerary;
+        const updatedItems = itinerary.items.map(i => 
+            i.id === item.id ? { ...i, completed: !i.completed } : i
+        );
+        setItinerary({ ...itinerary, items: updatedItems });
+
+        try {
+            // API Call in background
+            await ItineraryService.updateTripItineraryItem(tripId, item.id, {
+                completed: !item.completed
+            });
+            // Success: State is already correct
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to update status");
+            // Revert on failure
+            setItinerary(previousItinerary);
         }
     };
 
@@ -133,6 +167,14 @@ const TripItineraryPage = () => {
             day: d.toLocaleDateString(undefined, { weekday: 'long' }),
             date: d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
         };
+    };
+
+    const canCompleteItems = () => {
+        if (!trip) return false;
+        // Rules: Trip ONGOING && (Owner OR Admin)
+        const isOngoing = trip.status === 'ONGOING';
+        const isOwnerOrAdmin = trip.myRole === 'OWNER' || trip.myRole === 'ADMIN';
+        return isOngoing && isOwnerOrAdmin;
     };
 
     return (
@@ -184,24 +226,61 @@ const TripItineraryPage = () => {
                                 </div>
                                 <div className="timeline-items">
                                     {dayItems.map(item => (
-                                        <div key={item.id} className="activity-card" onClick={() => {
+                                        <div key={item.id} className={`activity-card ${item.completed ? 'completed' : ''}`} onClick={() => {
                                             if(!readOnly) {
                                                 setEditingItem(item);
                                                 setModalDefaultDate(item.date);
                                                 setItemModalOpen(true);
                                             }
                                         }}>
-                                            <div style={{display:'flex', justifyContent:'space-between'}}>
-                                                <div>
-                                                    <div className="activity-time">{item.startTime || 'All Day'} {item.durationMinutes ? `• ${item.durationMinutes}m` : ''}</div>
-                                                    <div className="activity-title">{item.title}</div>
-                                                    {item.locationText && <div className="activity-location">📍 {item.locationText}</div>}
+                                            <div style={{display:'flex', justifyContent:'space-between', alignItems: 'flex-start'}}>
+                                                <div style={{display:'flex', gap: '0.8rem', alignItems: 'flex-start'}}>
+                                                     {/* Always show check if completed, or if can complete */}
+                                                     {(item.completed || canCompleteItems()) && (
+                                                         <div 
+                                                            onClick={(e) => {
+                                                                if(canCompleteItems()) {
+                                                                    e.stopPropagation();
+                                                                    handleToggleComplete(item);
+                                                                }
+                                                            }}
+                                                            style={{
+                                                                marginTop: '3px',
+                                                                cursor: canCompleteItems() ? 'pointer' : 'default',
+                                                                minWidth: '24px',
+                                                                display: 'flex',
+                                                                alignItems: 'center'
+                                                            }}
+                                                         >
+                                                             {item.completed ? (
+                                                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                    <rect x="3" y="3" width="18" height="18" rx="4" fill="rgba(76, 175, 80, 0.1)"></rect>
+                                                                    <path d="M9 12l2 2 4-4"></path>
+                                                                 </svg>
+                                                             ) : (
+                                                                 canCompleteItems() && (
+                                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                        <rect x="3" y="3" width="18" height="18" rx="4"></rect>
+                                                                    </svg>
+                                                                 )
+                                                             )}
+                                                         </div>
+                                                     )}
+                                                    <div style={{
+                                                        opacity: item.completed ? 0.6 : 1, 
+                                                        textDecoration: item.completed ? 'line-through' : 'none',
+                                                        color: item.completed ? '#aaa' : 'inherit'
+                                                    }}>
+                                                        <div className="activity-time">{item.startTime || 'All Day'} {item.durationMinutes ? `• ${item.durationMinutes}m` : ''}</div>
+                                                        <div className="activity-title">{item.title}</div>
+                                                        {item.locationText && <div className="activity-location">📍 {item.locationText}</div>}
+                                                    </div>
                                                 </div>
                                                 {!readOnly && (
                                                     <button className="btn-icon" onClick={(e) => {
                                                         e.stopPropagation();
-                                                        handleDelete(item.id);
-                                                    }}>X</button>
+                                                        handleDeleteClick(item.id);
+                                                    }} style={{opacity: 0.6}}>X</button>
                                                 )}
                                             </div>
                                         </div>
@@ -228,6 +307,16 @@ const TripItineraryPage = () => {
                 onSave={handleSaveItem}
                 initialData={editingItem ? { ...editingItem } : { date: modalDefaultDate }}
                 isTripItem={true}
+            />
+
+            <ConfirmationModal
+                isOpen={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title="Delete Activity"
+                message="Are you sure you want to delete this activity? This action cannot be undone."
+                confirmText="Delete"
+                isDestructive={true}
             />
         </div>
     );
