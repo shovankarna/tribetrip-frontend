@@ -262,3 +262,53 @@
 .input-dark:focus {
   border-color: #555;
 }
+
+@media (max-width: 768px) {
+  .td-hero {
+    padding: 1.5rem;
+  }
+
+  .td-hero-header {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .td-actions {
+    width: 100%;
+    flex-direction: column; /* Stack buttons on very small screens? or row? Let's keep row but wrap if needed, or column for better touch targets */
+    flex-direction: row; 
+    flex-wrap: wrap;
+  }
+
+  .td-actions button {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .td-meta-row {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .td-meta-item {
+    width: 100%;
+  }
+
+  /* Ensure Status Badge is easily visible/accessible */
+  .td-meta-item:last-child {
+    margin-left: 0;
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+  
+  .td-status-badge {
+      display: block;
+      width: fit-content;
+  }
+
+  .td-grid {
+    gap: 1.5rem;
+  }
+}

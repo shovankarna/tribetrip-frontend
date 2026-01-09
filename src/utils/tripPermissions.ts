@@ -2,7 +2,7 @@ import type { Trip, TripRole } from '../services/TripService';
 
 export const canEditTripDetails = (status: Trip['status'], role: TripRole): boolean => {
     if (role !== 'OWNER') return false;
-    return ['DRAFT', 'PLANNING'].includes(status);
+    return ['DRAFT', 'PLANNING', 'CONFIRMED', 'ONGOING'].includes(status);
 };
 
 export const canAddMember = (status: Trip['status'], role: TripRole): boolean => {

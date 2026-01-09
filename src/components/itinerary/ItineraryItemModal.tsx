@@ -6,6 +6,7 @@ interface ItineraryItemModalProps {
     onSave: (item: any) => Promise<void>;
     initialData?: any;
     isTripItem?: boolean; // Changes labels if needed (e.g. Date vs Day Offset)
+    readOnly?: boolean;
 }
 
 const ItineraryItemModal: React.FC<ItineraryItemModalProps> = ({ 
@@ -13,7 +14,8 @@ const ItineraryItemModal: React.FC<ItineraryItemModalProps> = ({
     onClose, 
     onSave, 
     initialData,
-    isTripItem = false 
+    isTripItem = false,
+    readOnly = false
 }) => {
     const [title, setTitle] = useState('');
     const [notes, setNotes] = useState('');
@@ -88,12 +90,13 @@ const ItineraryItemModal: React.FC<ItineraryItemModalProps> = ({
                 background: '#1E1E1E', padding: '2rem', borderRadius: '12px', 
                 width: '100%', maxWidth: '500px', border: '1px solid #333', color: 'white'
             }}>
-                <h2 style={{marginTop: 0}}>{initialData ? 'Edit Item' : 'Add Item'}</h2>
+                <h2 style={{marginTop: 0}}>{readOnly ? 'View Item' : (initialData ? 'Edit Item' : 'Add Item')}</h2>
                 <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
                     <div>
                         <label style={{display: 'block', color: '#AAA', marginBottom: '0.5rem', fontSize: '0.9rem'}}>Title</label>
                         <input 
                             required
+                            disabled={readOnly}
                             value={title}
                             onChange={e => setTitle(e.target.value)}
                             style={{width: '100%', padding: '0.75rem', background: '#2C2C2C', border: '1px solid #444', color: 'white', borderRadius: '6px'}}
@@ -107,6 +110,7 @@ const ItineraryItemModal: React.FC<ItineraryItemModalProps> = ({
                                 <input 
                                     type="date"
                                     required
+                                    disabled={readOnly}
                                     value={date}
                                     onChange={e => setDate(e.target.value)}
                                     style={{width: '100%', padding: '0.75rem', background: '#2C2C2C', border: '1px solid #444', color: 'white', borderRadius: '6px'}}
@@ -119,6 +123,7 @@ const ItineraryItemModal: React.FC<ItineraryItemModalProps> = ({
                                     type="number"
                                     min="1"
                                     required
+                                    disabled={readOnly}
                                     value={dayOffset + 1}
                                     onChange={e => setDayOffset(parseInt(e.target.value) - 1)}
                                     style={{width: '100%', padding: '0.75rem', background: '#2C2C2C', border: '1px solid #444', color: 'white', borderRadius: '6px'}}
@@ -129,6 +134,7 @@ const ItineraryItemModal: React.FC<ItineraryItemModalProps> = ({
                              <label style={{display: 'block', color: '#AAA', marginBottom: '0.5rem', fontSize: '0.9rem'}}>Time (Optional)</label>
                              <input 
                                 type="time"
+                                disabled={readOnly}
                                 value={time}
                                 onChange={e => setTime(e.target.value)}
                                 style={{width: '100%', padding: '0.75rem', background: '#2C2C2C', border: '1px solid #444', color: 'white', borderRadius: '6px'}}
@@ -139,6 +145,7 @@ const ItineraryItemModal: React.FC<ItineraryItemModalProps> = ({
                     <div>
                          <label style={{display: 'block', color: '#AAA', marginBottom: '0.5rem', fontSize: '0.9rem'}}>Location (Optional)</label>
                          <input 
+                            disabled={readOnly}
                             value={locationText}
                             onChange={e => setLocationText(e.target.value)}
                             style={{width: '100%', padding: '0.75rem', background: '#2C2C2C', border: '1px solid #444', color: 'white', borderRadius: '6px'}}
@@ -149,6 +156,7 @@ const ItineraryItemModal: React.FC<ItineraryItemModalProps> = ({
                         <label style={{display: 'block', color: '#AAA', marginBottom: '0.5rem', fontSize: '0.9rem'}}>Notes</label>
                         <textarea 
                             rows={3}
+                            disabled={readOnly}
                             value={notes}
                             onChange={e => setNotes(e.target.value)}
                             style={{width: '100%', padding: '0.75rem', background: '#2C2C2C', border: '1px solid #444', color: 'white', borderRadius: '6px'}}
@@ -156,10 +164,14 @@ const ItineraryItemModal: React.FC<ItineraryItemModalProps> = ({
                     </div>
 
                     <div style={{display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '0.5rem'}}>
-                        <button type="button" onClick={onClose} style={{background: 'transparent', border: '1px solid #444', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '6px', cursor: 'pointer'}}>Cancel</button>
-                        <button type="submit" disabled={saving} style={{background: 'white', border: 'none', color: 'black', padding: '0.75rem 1.5rem', borderRadius: '6px', fontWeight: 600, cursor: 'pointer'}}>
-                            {saving ? 'Saving...' : 'Save Item'}
+                        <button type="button" onClick={onClose} style={{background: 'transparent', border: '1px solid #444', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '6px', cursor: 'pointer'}}>
+                            {readOnly ? 'Close' : 'Cancel'}
                         </button>
+                        {!readOnly && (
+                            <button type="submit" disabled={saving} style={{background: 'white', border: 'none', color: 'black', padding: '0.75rem 1.5rem', borderRadius: '6px', fontWeight: 600, cursor: 'pointer'}}>
+                                {saving ? 'Saving...' : 'Save Item'}
+                            </button>
+                        )}
                     </div>
                 </form>
             </div>

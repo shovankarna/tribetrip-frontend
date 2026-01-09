@@ -187,7 +187,7 @@ const TripsPage = () => {
                                     )}
                                     {(trip.startDate || trip.endDate) && (
                                         <div className="t-card-meta">
-                                            📅 {trip.startDate} - {trip.endDate}
+                                            📅 {trip.startDate} to {trip.endDate}
                                         </div>
                                     )}
                                     <div className="t-card-footer">

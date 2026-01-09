@@ -218,9 +218,8 @@ export const ItineraryService = {
         return handleApiResponse(response);
     },
 
-    updateTripItineraryItem: async (tripId: string, itemId: string, item: Partial<AddTripItineraryItemRequest>): Promise<TripItineraryItem> => {
+    updateTripItineraryItem: async (itemId: string, item: Partial<AddTripItineraryItemRequest>): Promise<TripItineraryItem> => {
         // Note: Backend endpoint updated to /api/itineraries/trip-items/{itemId}
-        // tripId param is technically unused in URL but kept for interface consistency or context if needed later
         const response = await fetch(`${API_BASE_URL}/itineraries/trip-items/${itemId}`, {
             method: 'PUT',
             headers: getHeaders(),
@@ -229,10 +228,19 @@ export const ItineraryService = {
         return handleApiResponse(response);
     },
 
-    deleteTripItineraryItem: async (tripId: string, itemId: string): Promise<void> => {
+    deleteTripItineraryItem: async (itemId: string): Promise<void> => {
         const response = await fetch(`${API_BASE_URL}/itineraries/trip-items/${itemId}`, {
             method: 'DELETE',
             headers: getHeaders()
+        });
+        return handleApiResponse(response);
+    },
+
+    moveTripItineraryItem: async (tripId: string, itemId: string, newDate: string, newOrderIndex?: number): Promise<void> => {
+        const response = await fetch(`${API_BASE_URL}/itineraries/trips/${tripId}/items/${itemId}/move`, {
+            method: 'PUT',
+            headers: getHeaders(),
+            body: JSON.stringify({ newDate, newOrderIndex })
         });
         return handleApiResponse(response);
     }
