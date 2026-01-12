@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import ConfirmationModal from '../components/common/ConfirmationModal';
 import './TripDetailPage.css';
 import { TripService, type Trip, type TripMember } from '../services/TripService';
+import ExpenseSummaryCard from '../components/expenses/ExpenseSummaryCard';
 import UpdateTripModal from '../components/trips/UpdateTripModal';
 import { 
     canEditTripDetails, 
@@ -285,6 +286,8 @@ const TripDetailPage = () => {
                                 </button>
                             </div>
                         </div>
+
+
                     </div>
 
                     {/* Sidebar Area */}
@@ -354,6 +357,8 @@ const TripDetailPage = () => {
                                 ))}
                             </div>
                         </div>
+
+                        <ExpenseSummaryCard tripId={trip.id} />
                     </div>
 
                 </div>

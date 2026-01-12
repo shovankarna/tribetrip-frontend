@@ -8,6 +8,8 @@ import TripDetailPage from './pages/TripDetailPage';
 import MyItinerariesPage from './pages/MyItinerariesPage';
 import ItineraryEditorPage from './pages/ItineraryEditorPage';
 import TripItineraryPage from './pages/TripItineraryPage';
+import TripExpensesPage from './pages/TripExpensesPage';
+import ExpensesPage from './pages/ExpensesPage';
 import keycloak from './auth';
 import { useState, useEffect, useRef } from 'react';
 
@@ -122,6 +124,22 @@ function App() {
             element={
                 <ProtectedRoute>
                     <TripItineraryPage />
+                </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/trips/:tripId/expenses" 
+            element={
+                <ProtectedRoute>
+                    <TripExpensesPage />
+                </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/expenses" 
+            element={
+                <ProtectedRoute>
+                    <ExpensesPage />
                 </ProtectedRoute>
             } 
           />

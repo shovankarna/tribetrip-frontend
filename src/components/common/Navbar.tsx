@@ -36,6 +36,7 @@ const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
                 <>
                      <a onClick={() => navigate('/trips')}>My Trips</a>
                      <a onClick={() => navigate('/itineraries')}>My Itineraries</a>
+                     <a onClick={() => navigate('/expenses')}>Expenses</a>
                 </>
             ) : (
                 isLanding && (

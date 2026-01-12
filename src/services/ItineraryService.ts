@@ -1,7 +1,7 @@
+import axios from 'axios';
 import keycloak from '../auth';
-import { handleApiResponse } from '../utils/api';
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 export type ItineraryStatus = 'DRAFT' | 'ACTIVE' | 'ARCHIVED';
 
@@ -95,10 +95,12 @@ export interface AddTripItineraryItemRequest {
     completed?: boolean;
 }
 
-const getHeaders = () => {
+const getConfig = () => {
     return {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${keycloak.token}`
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${keycloak.token}`
+        }
     };
 };
 
@@ -106,142 +108,82 @@ export const ItineraryService = {
     // --- Templates ---
 
     getUserTemplates: async (): Promise<ItineraryTemplate[]> => {
-        const response = await fetch(`${API_BASE_URL}/itineraries`, {
-            headers: getHeaders()
-        });
-        return handleApiResponse(response);
+        const response = await axios.get(`${API_BASE_URL}/itineraries`, getConfig());
+        return response.data;
     },
 
     getTemplate: async (templateId: string): Promise<ItineraryTemplate> => {
-        const response = await fetch(`${API_BASE_URL}/itineraries/${templateId}`, {
-            headers: getHeaders()
-        });
-        return handleApiResponse(response);
+        const response = await axios.get(`${API_BASE_URL}/itineraries/${templateId}`, getConfig());
+        return response.data;
     },
 
     createTemplate: async (data: CreateTemplateRequest): Promise<ItineraryTemplate> => {
-        const response = await fetch(`${API_BASE_URL}/itineraries`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(data)
-        });
-        return handleApiResponse(response);
+        const response = await axios.post(`${API_BASE_URL}/itineraries`, data, getConfig());
+        return response.data;
     },
 
     updateTemplate: async (templateId: string, data: UpdateTemplateRequest): Promise<ItineraryTemplate> => {
-        const response = await fetch(`${API_BASE_URL}/itineraries/${templateId}`, {
-            method: 'PUT',
-            headers: getHeaders(),
-            body: JSON.stringify(data)
-        });
-        return handleApiResponse(response);
+        const response = await axios.put(`${API_BASE_URL}/itineraries/${templateId}`, data, getConfig());
+        return response.data;
     },
 
     deleteTemplate: async (templateId: string): Promise<void> => {
-        const response = await fetch(`${API_BASE_URL}/itineraries/${templateId}`, {
-            method: 'DELETE',
-            headers: getHeaders()
-        });
-        return handleApiResponse(response);
+        await axios.delete(`${API_BASE_URL}/itineraries/${templateId}`, getConfig());
     },
 
     publishTemplate: async (templateId: string): Promise<ItineraryTemplate> => {
-        const response = await fetch(`${API_BASE_URL}/itineraries/${templateId}/publish`, {
-            method: 'POST',
-            headers: getHeaders()
-        });
-        return handleApiResponse(response);
+        const response = await axios.post(`${API_BASE_URL}/itineraries/${templateId}/publish`, {}, getConfig());
+        return response.data;
     },
 
     archiveTemplate: async (templateId: string): Promise<void> => {
-        const response = await fetch(`${API_BASE_URL}/itineraries/${templateId}/archive`, {
-            method: 'POST',
-            headers: getHeaders()
-        });
-        return handleApiResponse(response);
+        await axios.post(`${API_BASE_URL}/itineraries/${templateId}/archive`, {}, getConfig());
     },
 
     // --- Template Items ---
 
     addTemplateItem: async (templateId: string, item: CreateTemplateItemRequest): Promise<ItineraryTemplateItem> => {
-        const response = await fetch(`${API_BASE_URL}/itineraries/${templateId}/items`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(item)
-        });
-        return handleApiResponse(response);
+        const response = await axios.post(`${API_BASE_URL}/itineraries/${templateId}/items`, item, getConfig());
+        return response.data;
     },
 
     updateTemplateItem: async (templateId: string, itemId: string, item: UpdateTemplateItemRequest): Promise<ItineraryTemplateItem> => {
-        const response = await fetch(`${API_BASE_URL}/itineraries/${templateId}/items/${itemId}`, {
-            method: 'PUT',
-            headers: getHeaders(),
-            body: JSON.stringify(item)
-        });
-        return handleApiResponse(response);
+        const response = await axios.put(`${API_BASE_URL}/itineraries/${templateId}/items/${itemId}`, item, getConfig());
+        return response.data;
     },
 
     deleteTemplateItem: async (templateId: string, itemId: string): Promise<void> => {
-        const response = await fetch(`${API_BASE_URL}/itineraries/${templateId}/items/${itemId}`, {
-            method: 'DELETE',
-            headers: getHeaders()
-        });
-        return handleApiResponse(response);
+        await axios.delete(`${API_BASE_URL}/itineraries/${templateId}/items/${itemId}`, getConfig());
     },
-
-    // --- Trip Integration ---
 
     // --- Trip Integration ---
 
     attachTemplateToTrip: async (tripId: string, templateId: string): Promise<void> => {
-        const response = await fetch(`${API_BASE_URL}/itineraries/trips/${tripId}/attach/${templateId}`, {
-            method: 'POST',
-            headers: getHeaders()
-        });
-        return handleApiResponse(response);
+        await axios.post(`${API_BASE_URL}/itineraries/trips/${tripId}/attach/${templateId}`, {}, getConfig());
     },
 
     getTripItinerary: async (tripId: string): Promise<TripItinerary> => {
-        const response = await fetch(`${API_BASE_URL}/itineraries/trips/${tripId}`, {
-            headers: getHeaders()
-        });
-        return handleApiResponse(response);
+        const response = await axios.get(`${API_BASE_URL}/itineraries/trips/${tripId}`, getConfig());
+        return response.data;
     },
 
     // Explicit Trip Item Management (if not managing via template logic only)
     addTripItineraryItem: async (tripId: string, item: AddTripItineraryItemRequest): Promise<TripItineraryItem> => {
-        const response = await fetch(`${API_BASE_URL}/itineraries/trips/${tripId}/items`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(item)
-        });
-        return handleApiResponse(response);
+        const response = await axios.post(`${API_BASE_URL}/itineraries/trips/${tripId}/items`, item, getConfig());
+        return response.data;
     },
 
     updateTripItineraryItem: async (itemId: string, item: Partial<AddTripItineraryItemRequest>): Promise<TripItineraryItem> => {
         // Note: Backend endpoint updated to /api/itineraries/trip-items/{itemId}
-        const response = await fetch(`${API_BASE_URL}/itineraries/trip-items/${itemId}`, {
-            method: 'PUT',
-            headers: getHeaders(),
-            body: JSON.stringify(item)
-        });
-        return handleApiResponse(response);
+        const response = await axios.put(`${API_BASE_URL}/itineraries/trip-items/${itemId}`, item, getConfig());
+        return response.data;
     },
 
     deleteTripItineraryItem: async (itemId: string): Promise<void> => {
-        const response = await fetch(`${API_BASE_URL}/itineraries/trip-items/${itemId}`, {
-            method: 'DELETE',
-            headers: getHeaders()
-        });
-        return handleApiResponse(response);
+        await axios.delete(`${API_BASE_URL}/itineraries/trip-items/${itemId}`, getConfig());
     },
 
     moveTripItineraryItem: async (tripId: string, itemId: string, newDate: string, newOrderIndex?: number): Promise<void> => {
-        const response = await fetch(`${API_BASE_URL}/itineraries/trips/${tripId}/items/${itemId}/move`, {
-            method: 'PUT',
-            headers: getHeaders(),
-            body: JSON.stringify({ newDate, newOrderIndex })
-        });
-        return handleApiResponse(response);
+        await axios.put(`${API_BASE_URL}/itineraries/trips/${tripId}/items/${itemId}/move`, { newDate, newOrderIndex }, getConfig());
     }
 };
