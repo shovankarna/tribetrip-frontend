@@ -71,7 +71,7 @@ const ExpensesPage = () => {
                             >
                                 <h3 style={{marginTop: 0, marginBottom: '0.5rem'}}>{trip.name}</h3>
                                 <p style={{color: '#aaa', fontSize: '0.9rem', marginBottom: '1rem'}}>
-                                    {trip.destination} • {new Date(trip.startDate).toLocaleDateString()}
+                                    {trip.destination || 'Unknown Destination'} • {trip.startDate ? new Date(trip.startDate).toLocaleDateString() : 'Date TBD'}
                                 </p>
                                 <div style={{display: 'flex', justifyContent: 'flex-end'}}>
                                     <span style={{color: '#3D5AFE', fontWeight: 600}}>View Expenses →</span>

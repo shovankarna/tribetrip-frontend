@@ -17,6 +17,7 @@ import {
     canChangeMemberRole, 
     canChangeStatus 
 } from '../utils/tripPermissions';
+import { useUserNames } from '../hooks/useUserNames';
 
 // Icons
 const CalendarIcon = () => (
@@ -74,6 +75,10 @@ const TripDetailPage = () => {
         }
     };
 
+    // User Names Hook
+    const memberIds = members.map(m => m.userId);
+    const { getName } = useUserNames(memberIds);
+
     const handleAddMember = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!tripId || !addMemberId) return;
@@ -92,7 +97,7 @@ const TripDetailPage = () => {
         setConfirmModal({
             isOpen: true,
             title: 'Remove Member',
-            message: 'Are you sure you want to remove this member from the trip?',
+            message: `Are you sure you want to remove ${getName(userId)} from the trip?`,
             isDestructive: true,
             onConfirm: async () => {
                 if (!tripId) return;
@@ -322,14 +327,14 @@ const TripDetailPage = () => {
                                 </form>
                             )}
 
-                            <div className="member-list">
+                            <div className="member-list" style={{maxHeight: '400px', overflowY: 'auto', paddingRight: '0.5rem'}}>
                                 {members.map(member => (
                                     <div key={member.id} className="member-card">
                                         <div className="member-avatar">
-                                            {member.userId.substring(0, 2).toUpperCase()}
+                                            {getName(member.userId).substring(0, 2).toUpperCase()}
                                         </div>
                                         <div className="member-details">
-                                            <div className="member-name">{member.userId}</div> {/* Replace with name if available */}
+                                            <div className="member-name">{getName(member.userId)}</div>
                                             <div className="member-actions-row" style={{display:'flex', alignItems:'center', gap: '0.5rem'}}>
                                                 <div className={`member-role role-${member.role}`}>{member.role}</div>
                                                 {canChangeMemberRole(trip.status, trip.myRole) && 

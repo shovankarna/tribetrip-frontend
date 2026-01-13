@@ -4,6 +4,8 @@ import { ExpenseService } from '../../services/ExpenseService';
 import type { CreateExpenseRequest, ExpenseParticipant } from '../../services/ExpenseService';
 import toast from 'react-hot-toast';
 
+import { useUserNames } from '../../hooks/useUserNames';
+
 interface AddExpenseModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -23,6 +25,10 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [payerId, setPayerId] = useState('');
     const [loading, setLoading] = useState(false);
+    
+    // User Names
+    const memberIds = members.map(m => m.userId);
+    const { getName } = useUserNames(memberIds);
     
     // Advanced Split State
     const [splitType, setSplitType] = useState<'EQUAL' | 'UNEQUAL'>('EQUAL');
@@ -84,7 +90,7 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
 
         setLoading(true);
         try {
-            const participants: ExpenseParticipant[] = [];
+
             const allInvolvedIds = new Set([...Array.from(selectedMembers), payerId]);
             const finalParticipants: ExpenseParticipant[] = [];
             const shareIfEqual = total / selectedMembers.size;
@@ -212,7 +218,7 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                                     style={{width: '100%', padding: '0.75rem', background: '#333', border: 'none', borderRadius: '6px', color: 'white'}}
                                  >
                                     {members.map(m => (
-                                        <option key={m.userId} value={m.userId}>{m.userId}</option>
+                                        <option key={m.userId} value={m.userId}>{getName(m.userId)}</option>
                                     ))}
                                  </select>
                             </div>
@@ -275,19 +281,28 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                                     }
 
                                     return (
-                                        <div key={member.userId} style={{display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.5rem', background: '#252525', borderRadius: '8px'}}>
+                                        <div key={member.userId} style={{
+                                            display: 'grid', 
+                                            gridTemplateColumns: 'auto 1fr auto', 
+                                            alignItems: 'center', 
+                                            gap: '1rem', 
+                                            padding: '0.75rem', 
+                                            background: '#252525', 
+                                            borderRadius: '8px',
+                                            border: isSelected ? '1px solid #333' : '1px solid transparent'
+                                        }}>
                                             <input 
                                                 type="checkbox" 
                                                 checked={isSelected}
                                                 onChange={() => toggleMember(member.userId)}
-                                                style={{width: '18px', height: '18px', cursor: 'pointer'}}
+                                                style={{width: '18px', height: '18px', cursor: 'pointer', margin: 0}}
                                             />
-                                            <span style={{flex: 1, fontWeight: 500}}>{member.userId}</span>
+                                            <span style={{fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{getName(member.userId)}</span>
                                             
                                             {isSelected && (
-                                                <div style={{minWidth: '100px'}}>
+                                                <div style={{minWidth: '80px', display: 'flex', justifyContent: 'flex-end'}}>
                                                     {splitType === 'EQUAL' ? (
-                                                        <div style={{textAlign: 'right', color: '#aaa', padding: '0.5rem'}}>
+                                                        <div style={{color: '#aaa', padding: '0.5rem 0'}}>
                                                             ${shareDisplay}
                                                         </div>
                                                     ) : (
@@ -299,9 +314,13 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                                                             value={customAmounts[member.userId] || ''}
                                                             onChange={(e) => handleCustomAmountChange(member.userId, e.target.value)}
                                                             style={{
-                                                                width: '100px', padding: '0.5rem', background: '#333', 
-                                                                border: '1px solid #444', borderRadius: '4px', 
-                                                                color: 'white', textAlign: 'right'
+                                                                width: '100px', 
+                                                                padding: '0.5rem', 
+                                                                background: '#333', 
+                                                                border: '1px solid #444', 
+                                                                borderRadius: '4px', 
+                                                                color: 'white', 
+                                                                textAlign: 'right'
                                                             }}
                                                         />
                                                     )}
@@ -312,9 +331,10 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                                 })}
                             </div>
                             {splitType === 'UNEQUAL' && amount && (
-                                <div style={{textAlign: 'right', marginTop: '0.5rem', fontSize: '0.9rem'}}>
-                                    <span style={{color: '#aaa'}}>Left to split: </span>
+                                <div style={{textAlign: 'right', marginTop: '0.75rem', fontSize: '0.9rem'}}>
+                                    <span style={{color: '#aaa'}}>Remaining: </span>
                                     <span style={{
+                                        fontWeight: 600,
                                         color: Math.abs(parseFloat(amount) - Array.from(selectedMembers).reduce((acc, uid) => acc + (parseFloat(customAmounts[uid]||'0') || 0), 0)) < 0.05 ? '#4CAF50' : '#FF5252'
                                     }}>
                                         ${(parseFloat(amount) - Array.from(selectedMembers).reduce((acc, uid) => acc + (parseFloat(customAmounts[uid]||'0') || 0), 0)).toFixed(2)}

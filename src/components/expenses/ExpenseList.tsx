@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Expense } from '../../services/ExpenseService';
+import { useUserNames } from '../../hooks/useUserNames';
 
 interface ExpenseListProps {
     expenses: Expense[];
@@ -8,6 +9,8 @@ interface ExpenseListProps {
 }
 
 const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onDelete, currentUserId }) => {
+    const userIds = expenses.map(e => e.createdByUserId);
+    const { getName } = useUserNames(userIds);
     if (expenses.length === 0) {
         return <div style={{textAlign: 'center', padding: '2rem', color: '#666'}}>No expenses yet</div>;
     }
@@ -39,7 +42,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onDelete, currentUs
                             <div>
                                 <div style={{fontWeight: 600, color: 'white', fontSize: '1rem'}}>{expense.title}</div>
                                 <div style={{fontSize: '0.8rem', color: '#aaa'}}>
-                                    Paid by <span style={{color: 'white'}}>{expense.createdByUserId}</span> • {new Date(expense.expenseDate).toLocaleDateString()}
+                                    Paid by <span style={{color: 'white'}}>{getName(expense.createdByUserId)}</span> • {new Date(expense.expenseDate).toLocaleDateString()}
                                 </div>
                             </div>
                         </div>

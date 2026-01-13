@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { SettlementResponse } from '../../services/ExpenseService';
+import { useUserNames } from '../../hooks/useUserNames';
 
 interface SettlementListProps {
     settlements: SettlementResponse[];
@@ -7,6 +8,9 @@ interface SettlementListProps {
 
 const SettlementList: React.FC<SettlementListProps> = ({ settlements }) => {
     const [isExpanded, setIsExpanded] = useState(false);
+    
+    const userIds = settlements.flatMap(s => [s.fromUserId, s.toUserId]);
+    const { getName } = useUserNames(userIds);
 
     if (settlements.length === 0) return null;
 
@@ -35,9 +39,9 @@ const SettlementList: React.FC<SettlementListProps> = ({ settlements }) => {
                     <div style={{display: 'flex', flexDirection: 'column', gap: '0.8rem'}}>
                         {settlements.map((s, idx) => (
                             <div key={idx} style={{display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#ddd'}}>
-                                <span style={{fontWeight: 600, color: '#FF5252'}}>{s.fromUserId}</span>
+                                <span style={{fontWeight: 600, color: '#FF5252'}}>{getName(s.fromUserId)}</span>
                                 <span style={{color: '#888'}}>→</span>
-                                <span style={{fontWeight: 600, color: '#4CAF50'}}>{s.toUserId}</span>
+                                <span style={{fontWeight: 600, color: '#4CAF50'}}>{getName(s.toUserId)}</span>
                                 <span style={{marginLeft: 'auto', fontWeight: 'bold'}}>${s.amount.toFixed(2)}</span>
                             </div>
                         ))}

@@ -275,3 +275,77 @@
 .icon-btn-text:hover {
   background: rgba(255,255,255,0.05);
 }
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 768px) {
+  .trips-page-container {
+      padding-top: 70px; /* Slightly less padding on mobile */
+  }
+
+  .trips-content-wrapper {
+      padding: 1.5rem 1rem;
+  }
+
+  /* Header */
+  .trips-page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+  }
+
+  .trips-title {
+      font-size: 1.75rem;
+  }
+
+  .cta-button-large {
+      width: 100%;
+      text-align: center;
+      padding: 0.75rem;
+  }
+
+  /* Toolbar */
+  .trips-toolbar {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+  }
+
+  .trips-tabs {
+     width: 100%;
+     justify-content: space-between; /* Distribute tabs evenly */
+     background-color: #1E1E1E; /* Slight background for tabs container */
+     padding: 0.25rem;
+     border-radius: 8px;
+  }
+  
+  .trip-tab {
+      flex: 1;
+      text-align: center;
+      font-size: 0.85rem;
+      padding: 0.5rem;
+  }
+
+  .trips-search-group {
+      width: 100%;
+      gap: 0.5rem;
+  }
+
+  .search-field-wrapper {
+      flex: 1;
+  }
+
+  .search-field {
+      width: 100%; /* Full width search */
+  }
+
+  /* Grid */
+  .trips-grid-view {
+      grid-template-columns: 1fr; /* Single column */
+      gap: 1.5rem;
+  }
+
+  .t-card-cover {
+      height: 160px; /* Slightly shorter images */
+  }
+}

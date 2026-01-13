@@ -1,5 +1,6 @@
 import React from 'react';
 import type { BalanceResponse } from '../../services/ExpenseService';
+import { useUserNames } from '../../hooks/useUserNames';
 
 interface BalanceCardsProps {
     balances: BalanceResponse[];
@@ -8,11 +9,8 @@ interface BalanceCardsProps {
 
 const BalanceCards: React.FC<BalanceCardsProps> = ({ balances, members }) => {
     
-    const getMemberName = (userId: string) => {
-        // In real app, look up name from members list
-        // For MVP, using userId or partial
-        return userId; 
-    };
+    const userIds = balances.map(b => b.userId);
+    const { getName } = useUserNames(userIds);
 
     return (
         <div className="balance-cards-container" style={{
@@ -43,10 +41,10 @@ const BalanceCards: React.FC<BalanceCardsProps> = ({ balances, members }) => {
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: '0.8rem', fontWeight: 'bold', color: '#fff', marginBottom: '0.5rem'
                         }}>
-                            {balance.userId.substring(0, 2).toUpperCase()}
+                            {getName(balance.userId).substring(0, 2).toUpperCase()}
                         </div>
                         <div style={{fontWeight: 600, color: 'white', marginBottom: '0.25rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%'}}>
-                            {balance.userId}
+                            {getName(balance.userId)}
                         </div>
                         
                         {isOwed && (
