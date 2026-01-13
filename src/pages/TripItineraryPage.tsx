@@ -72,15 +72,28 @@ const TripItineraryPage = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [tripData, itineraryData] = await Promise.all([
-                TripService.getTrip(tripId!),
-                ItineraryService.getTripItinerary(tripId!)
-            ]);
+            const tripData = await TripService.getTrip(tripId!);
             setTrip(tripData);
-            setItinerary(itineraryData);
+
+            try {
+                const itineraryData = await ItineraryService.getTripItinerary(tripId!);
+                setItinerary(itineraryData);
+            } catch (err: any) {
+                if (err.response && err.response.status === 404) {
+                    // Itinerary doesn't exist yet, separate handling
+                    setItinerary({
+                        id: 'virtual-new', 
+                        tripId: tripId!, 
+                        items: []
+                    } as any);
+                } else {
+                    console.error(err);
+                    toast.error("Failed to load trip itinerary");
+                }
+            }
         } catch (err) {
             console.error(err);
-            toast.error("Failed to load trip itinerary");
+            toast.error("Failed to load trip details");
         } finally {
             setLoading(false);
         }

@@ -293,6 +293,10 @@ const TripDetailPage = () => {
                         </div>
 
 
+
+                        <div style={{ marginTop: '1.5rem' }}>
+                            <ExpenseSummaryCard tripId={trip.id} />
+                        </div>
                     </div>
 
                     {/* Sidebar Area */}
@@ -363,7 +367,7 @@ const TripDetailPage = () => {
                             </div>
                         </div>
 
-                        <ExpenseSummaryCard tripId={trip.id} />
+
                     </div>
 
                 </div>
