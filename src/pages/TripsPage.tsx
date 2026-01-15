@@ -168,12 +168,9 @@ const TripsPage = () => {
                                 onClick={() => navigate(`/trips/${trip.id}`)}
                             >
                                 <img 
-                                    src={`https://source.unsplash.com/800x400/?travel,${trip.destination || 'nature'}`} 
+                                    src="/assets/illustrations/TripCardPlaceHolder.png" 
                                     alt={trip.name}
                                     className="t-card-cover"
-                                    onError={(e) => {
-                                        (e.target as HTMLImageElement).src = 'https://source.unsplash.com/800x400/?laptop';
-                                    }}
                                 />
                                 <div className="t-card-body">
                                     <div className="t-card-header">
