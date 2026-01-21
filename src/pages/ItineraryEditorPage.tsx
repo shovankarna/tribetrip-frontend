@@ -265,6 +265,7 @@ const ItineraryEditorPage = () => {
                 isOpen={attachModalOpen}
                 onClose={() => setAttachModalOpen(false)}
                 onSelect={handleAttachToTrip}
+                defaultName={template ? template.title : ''}
             />
 
             <EditTemplateModal 

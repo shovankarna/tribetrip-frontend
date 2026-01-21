@@ -13,12 +13,16 @@
   min-height: 100vh;
   color: var(--ip-text-main);
   padding-top: 80px;
+  display: flex;
+  flex-direction: column;
 }
 
 .itineraries-content-wrapper {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
+  width: 100%; /* Ensure width constraint */
+  flex: 1; /* Pushes Footer down */
 }
 
 .itineraries-header {

@@ -16,13 +16,16 @@
   min-height: 100vh;
   color: var(--tp-text-main);
   padding-top: 80px; /* Fix navbar overlap */
-  /* padding-bottom: 4rem; */
+  display: flex;
+  flex-direction: column;
 }
 
 .trips-content-wrapper {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
+  width: 100%;
+  flex: 1;
 }
 
 /* 1. Header Row: Title and Main CTA */

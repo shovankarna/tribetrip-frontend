@@ -1,0 +1,541 @@
+/* AI Planning Wizard Overlay */
+.ai-wizard-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  .ai-wizard-container {
+    background: #1a1a1a;
+    color: #fff;
+    width: 90%;
+    max-width: 1200px;
+    height: 85vh;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #333;
+    animation: slideUp 0.4s ease;
+  }
+  
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  /* Header */
+  .ai-wizard-header {
+    padding: 20px 30px;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1a1a1a;
+  }
+  
+  .ai-wizard-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .ai-close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #888;
+    transition: color 0.2s;
+  }
+  
+  .ai-close-btn:hover {
+    color: #fff;
+  }
+  
+  /* Steps Container */
+  .ai-step-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+    background: #121212;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Step 1: Input Form */
+  .ai-input-wrapper {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #1e1e1e;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    width: 100%;
+    border: 1px solid #333;
+  }
+  
+  .ai-input-wrapper h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #fff;
+  }
+  
+  .ai-input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 25px;
+  }
+  
+  .full-width {
+    grid-column: span 2;
+  }
+  
+  .form-label {
+      color: #ccc;
+      margin-bottom: 8px;
+      display: block;
+      font-size: 0.9rem;
+  }
+
+  .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #444;
+      background: #2a2a2a;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+  }
+
+  .form-input:focus {
+      border-color: #6366f1;
+  }
+  
+  /* Step 2: Main Layout (3 Columns) */
+  .ai-split-view {
+    display: flex;
+    height: 100%;
+    overflow: hidden;
+    background: #121212;
+  }
+  
+  /* Column 1: Navigation Sidebar (Day Tabs) */
+  .preview-nav-sidebar {
+    width: 140px;
+    background: #111;
+    border-right: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+    overflow-y: auto;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+
+  .nav-day-btn {
+      background: transparent;
+      border: none;
+      color: #888;
+      padding: 12px 15px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.95rem;
+      border-left: 3px solid transparent;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 4px;
+      font-weight: 500;
+      transition: all 0.2s;
+  }
+
+  .nav-day-btn:hover {
+      background: #252525;
+      color: #ddd;
+  }
+
+  .nav-day-btn.active {
+      background: linear-gradient(90deg, #2a2a2a, #1a1a1a);
+      color: #818cf8;
+      border-left: 3px solid #6366f1;
+      font-weight: 600;
+  }
+
+  /* Column 2: Main Content Area (Timeline) */
+  .preview-content-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 30px;
+    background: #0f0f0f;
+  }
+  
+  .preview-header-section {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #333;
+  }
+  
+  .preview-timeline-container {
+      position: relative;
+  }
+
+  /* Column 3: Refinement Sidebar */
+  .ai-controls-panel {
+    width: 350px;
+    min-width: 350px;
+    display: flex;
+    flex-direction: column;
+    background: #141414;
+    border-left: 1px solid #333;
+  }
+
+  /* Refined Chips */
+  .ai-chip {
+    padding: 6px 14px;
+    background: rgba(99, 102, 241, 0.1);
+    color: #c7d2fe;
+    border-radius: 6px; /* Pill shape is nice but lets try rounded rect for better text fit? User wants refined. */
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    /* Prevent massive width */
+    max-width: 100%;
+    white-space: normal; /* Allow wrapping inside chip if needed? No, usually single line. */
+    display: inline-block;
+  }
+
+  .ai-chip.static {
+      cursor: default;
+      background: #27272a; /* Neutral for assumptions */
+      border-color: #3f3f46;
+      color: #e4e4e7;
+  }
+  
+  .ai-chip:hover:not(.static) {
+    background: rgba(99, 102, 241, 0.25);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+  }
+
+  /* Day Section & Cards */
+  .day-section {
+      margin-bottom: 40px;
+  }
+  
+  .day-section-header {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+  }
+
+  .preview-day-card {
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-left: 3px solid #6366f1;
+      border-radius: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .preview-item {
+      display: flex;
+      gap: 20px;
+      padding: 20px 0;
+      border-bottom: 1px solid #27272a;
+      position: relative;
+  }
+  
+  .preview-item:last-child {
+      border-bottom: none;
+  }
+  
+  .preview-item::before {
+      content: '';
+      position: absolute;
+      left: 65px;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: #27272a;
+      z-index: 0;
+  }
+
+  .preview-time {
+    font-size: 0.9rem;
+    color: #9ca3af;
+    width: 50px;
+    flex-shrink: 0;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  
+  .preview-details {
+      flex: 1;
+      padding: 15px;
+      background: #202023;
+      border: 1px solid #333;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      z-index: 1;
+      position: relative;
+  }
+  
+  .preview-details::before {
+      content: '';
+      position: absolute;
+      left: -27px;
+      top: 22px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #818cf8;
+      box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.2);
+      border: none;
+  }
+
+  .preview-details h4 {
+    margin: 0 0 6px 0;
+    font-size: 1rem;
+    color: #fff;
+    font-weight: 600;
+  }
+  
+  .preview-details p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #9ca3af;
+    line-height: 1.5;
+  }
+
+  /* Chat Area Polish */
+  .ai-chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
+    gap: 15px;
+    height: 100%;
+  }
+
+  .ai-chat-input-box {
+    display: flex;
+    gap: 12px;
+    background: #1f1f1f;
+    padding: 12px;
+    border-radius: 16px;
+    border: 1px solid #333;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    align-items: flex-end;
+    transition: all 0.2s;
+  }
+  
+  .ai-chat-input-box:focus-within {
+      border-color: #6366f1;
+      background: #252525;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  }
+  
+  .ai-chat-textarea {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.95rem;
+    background: transparent;
+    color: #fff;
+    resize: none;
+    font-family: inherit;
+    line-height: 1.5;
+    min-height: 24px;
+    max-height: 150px;
+    padding: 4px 0;
+  }
+
+  .ai-send-icon-btn {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #6366f1;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+  }
+
+  .ai-send-icon-btn:hover:not(:disabled) {
+      background: #4f46e5;
+      transform: scale(1.05);
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+  }
+
+  .ai-send-icon-btn:disabled {
+      background: #333;
+      color: #666;
+      cursor: not-allowed;
+  }
+
+  /* Responsive Layout (Mobile) */
+  @media (max-width: 900px) {
+    .ai-split-view {
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .preview-nav-sidebar {
+      width: 100%;
+      height: auto;
+      flex-direction: row;
+      border-right: none;
+      border-bottom: 1px solid #333;
+      padding: 10px;
+      overflow-x: auto;
+      gap: 10px;
+    }
+
+    .nav-day-btn {
+      border-left: none;
+      border-bottom: 3px solid transparent;
+      border-radius: 8px; /* Reset radius for pill-like on mobile? Or just box */
+      padding: 8px 16px;
+      white-space: nowrap;
+      margin-bottom: 0;
+    }
+
+    .nav-day-btn.active {
+      background: #2a2a2a;
+      border-left-color: transparent;
+      border-bottom-color: #6366f1;
+    }
+
+    .ai-controls-panel {
+      width: 100%;
+      min-width: 0;
+      border-left: none;
+      border-top: 1px solid #333;
+      height: 300px;
+      flex-shrink: 0;
+    }
+    
+    .preview-content-area {
+        padding: 15px;
+    }
+  }
+  
+  /* Footer */
+  .ai-wizard-footer {
+    padding: 15px 30px;
+    background: #1a1a1a;
+    border-top: 1px solid #333;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+  
+  /* Dropdown for CTA */
+  .create-dropdown-container {
+    position: relative;
+  }
+  
+  .create-menu {
+    position: absolute;
+    top: 110%;
+    right: 0;
+    background: #2a2a2a;
+    min-width: 180px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    padding: 8px 0;
+    z-index: 100;
+    border: 1px solid #444;
+    overflow: hidden;
+  }
+  
+  .create-menu-item {
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.1s;
+    font-size: 0.95rem;
+    color: #ddd;
+  }
+  
+  .create-menu-item:hover {
+    background: #3a3a3a;
+    color: #fff;
+  }
+  
+  .ai-sparkle {
+    color: #a855f7;
+  }
+  
+  /* Loading States */
+  .loading-overlay-inner {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    backdrop-filter: blur(2px);
+  }
+  
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #444;
+    border-top-color: #6366f1;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+  }
+  
+  .preview-chip {
+      background: #333;
+      color: #ccc;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }

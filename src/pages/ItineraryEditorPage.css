@@ -40,13 +40,28 @@
 }
 
 .badge-status {
-    background: #333;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    color: #AAA;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #ccc;
     text-transform: uppercase;
     margin-left: 1rem;
+    border: 1px solid #444;
+    vertical-align: middle;
+}
+
+.badge-status.DRAFT {
+    color: #fbbf24; /* Amber for draft */
+    border-color: rgba(251, 191, 36, 0.3);
+    background: rgba(251, 191, 36, 0.1);
+}
+
+.badge-status.PUBLISHED {
+    color: #4ade80; /* Green */
+    border-color: rgba(74, 222, 128, 0.3);
+    background: rgba(74, 222, 128, 0.1);
 }
 
 /* Day List */
@@ -153,20 +168,70 @@
     background: transparent;
     border: 1px solid #444;
     color: #EEE;
-    padding: 0.4rem 0.8rem;
-    border-radius: 6px;
-    font-size: 0.85rem;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
     cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-.btn-secondary-sm:hover { background: #333; }
+.btn-secondary-sm:hover { 
+    background: #333; 
+    border-color: #666;
+}
 
 .btn-primary-sm {
-    background: white;
-    border: none;
-    color: #000;
-    padding: 0.4rem 0.8rem;
-    border-radius: 6px;
-    font-size: 0.85rem;
+    background: #6366f1;
+    border: 1px solid #6366f1;
+    color: white;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.btn-primary-sm:hover {
+    background: #4f46e5;
+    border-color: #4f46e5;
+    transform: translateY(-1px);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .editor-title-row {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .editor-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* 2 buttons per row? or auto-fit */
+        gap: 10px;
+    }
+
+    .editor-actions button {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .day-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .day-actions {
+        width: 100%;
+    }
+    
+    .day-actions button {
+        width: 100%;
+    }
 }

@@ -185,5 +185,67 @@ export const ItineraryService = {
 
     moveTripItineraryItem: async (tripId: string, itemId: string, newDate: string, newOrderIndex?: number): Promise<void> => {
         await axios.put(`${API_BASE_URL}/itineraries/trips/${tripId}/items/${itemId}/move`, { newDate, newOrderIndex }, getConfig());
+    },
+
+    // --- AI Planning ---
+
+    generateAiItinerary: async (request: AiItineraryRequest): Promise<AiItineraryResponse> => {
+        const response = await axios.post(`${API_BASE_URL}/itineraries/ai/generate`, request, getConfig());
+        return response.data;
+    },
+
+    refineAiItinerary: async (context: RefinementContextRequest): Promise<AiItineraryResponse> => {
+        const response = await axios.post(`${API_BASE_URL}/itineraries/ai/refine-context`, context, getConfig());
+        return response.data;
+    },
+
+    confirmAiItinerary: async (response: AiItineraryResponse): Promise<void> => {
+        await axios.post(`${API_BASE_URL}/itineraries/ai/confirm`, response, getConfig());
     }
 };
+
+// --- AI DTOs ---
+
+export interface AiItineraryRequest {
+    destination: string;
+    month: string;
+    durationDays: number;
+    budgetType: 'LOW' | 'MID' | 'HIGH' | 'LUXURY';
+    tripType: 'LEISURE' | 'ADVENTURE' | 'CULTURE' | 'FOODIE' | 'RELAXED' | 'NIGHTLIFE' | 'MIXED';
+    groupType: 'SOLO' | 'COUPLE' | 'FAMILY' | 'FRIENDS' | 'BUSINESS';
+    numberOfPeople: number;
+    pace: 'RELAXED' | 'BALANCED' | 'PACKED';
+}
+
+export interface AiRefinementRequest {
+    refinementType: 'PACE_CHANGE' | 'ADD_ACTIVITY_TYPE' | 'REMOVE_ACTIVITY_TYPE' | 'SHORTER_DAYS' | 'LONGER_DAYS';
+    value: string;
+}
+
+export interface RefinementContextRequest {
+    currentItineraryJson: string;
+    refinementRequest: AiRefinementRequest;
+}
+
+export interface AiActivityItem {
+    title: string;
+    description?: string;
+    startTime?: string;
+    durationMinutes?: number;
+    location?: string;
+    order: number;
+    notes?: string;
+}
+
+export interface AiDayPlan {
+    dayOffset: number; // 0-based
+    items: AiActivityItem[];
+}
+
+export interface AiItineraryResponse {
+    title: string;
+    description?: string;
+    pace?: string;
+    assumptions?: string[];
+    days: AiDayPlan[];
+}
