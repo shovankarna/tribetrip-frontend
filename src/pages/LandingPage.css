@@ -19,19 +19,19 @@ body {
 .landing-container {
   position: relative;
   width: 100%;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh; /* Changed from height: 100vh to allow scrolling */
+  overflow-x: hidden;
   color: var(--text-white);
+  overflow-y: auto; /* Enable vertical scrolling */
 }
 
 /* Background Image setup */
-/* Background Image setup */
 .landing-background {
-    position: absolute;
+    position: fixed; /* Fixed so it stays while scrolling header */
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 100vh;
     background-size: cover;
     background-position: center;
     z-index: -2;
@@ -45,17 +45,17 @@ body {
 
 /* Gradient Overlay for text readability */
 .landing-overlay {
-    position: absolute;
+    position: fixed; /* Fixed like the background */
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 100vh;
     background: linear-gradient(
         to bottom, 
         rgba(0,0,0,0.3) 0%, 
         rgba(0,0,0,0.2) 30%, 
         rgba(0,0,0,0.6) 80%, 
-        rgba(0,0,0,0.9) 100%
+        rgb(12 12 12) 100%
     );
     z-index: -1;
 }
@@ -130,7 +130,7 @@ body {
 
 /* Hero Content */
 .hero {
-    height: 100%;
+    height: 100vh; /* Full viewport height */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -224,4 +224,126 @@ body {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* Sections Common */
+.section-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 6rem 1.5rem;
+    text-align: center;
+}
+
+.section-container h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #fff;
+}
+
+.section-subtitle {
+    color: var(--text-gray);
+    font-size: 1.1rem;
+    margin-bottom: 4rem;
+}
+
+/* Features Section */
+.features-section {
+    background-color: #0c0c0c;
+    position: relative;
+    z-index: 1;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 3rem;
+}
+
+.feature-card {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 2.5rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #fff;
+}
+
+.feature-card p {
+    color: var(--text-gray);
+    line-height: 1.6;
+}
+
+/* Explore Section */
+.explore-section {
+    background-color: #0c0c0c; /* Keep dark background */
+    padding-bottom: 6rem;
+    position: relative;
+    z-index: 1;
+}
+
+.destinations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.destination-card {
+    height: 350px;
+    border-radius: 16px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    /* Placeholder fallback color */
+    background-color: #222;
+}
+
+.destination-card:hover {
+    transform: scale(1.02);
+}
+
+.destination-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.9));
+}
+
+.destination-content {
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
+    right: 2rem;
+    z-index: 1;
+    text-align: left;
+}
+
+.destination-content h3 {
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem 0;
+}
+
+.destination-content span {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
