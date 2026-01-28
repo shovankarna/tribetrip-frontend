@@ -48,12 +48,13 @@ function App() {
   return (
     <>
       <Toaster
+        containerStyle={{ zIndex: 100000 }}
         position="top-center"
         toastOptions={{
           style: {
             background: '#333',
             color: '#fff',
-            zIndex: 9999,
+            zIndex: 99999,
           },
           success: {
             style: {
