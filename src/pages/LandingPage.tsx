@@ -11,7 +11,12 @@ const images = [
   '/images/hero-carousel/hero-2.png',
   '/images/hero-carousel/hero-3.png',
   '/images/hero-carousel/hero-4.png',
-  '/images/hero-carousel/hero-5.png'
+  '/images/hero-carousel/hero-5.png',
+  '/images/hero-carousel/hero-6.png',
+  '/images/hero-carousel/hero-7.png',
+  '/images/hero-carousel/hero-8.png',
+  '/images/hero-carousel/hero-9.png',
+  '/images/hero-carousel/hero-10.png'
 ];
 
 const LandingPage: React.FC = () => {
